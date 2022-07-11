@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme
+   LastUpgradeVersion = "1210"
+   version = "1.7">
+   <BuildAction
+      parallelizeBuildables = "NO"
+      buildImplicitDependencies = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "# Type a script or drag a script file from your workspace to insert its path.&#10;echo &quot;${ENVFILE}&quot; &gt; /tmp/envfile&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+                     BuildableName = "ProductsShop.app"
+                     BlueprintName = "ProductsShop"
+                     ReferencedContainer = "container:ProductsShop.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "path=${INFOPLIST_FILE}&#10;envPath=${PROJECT_DIR}/../.env.prod.release&#10;&#10;versionName=$(cat ${envPath} | grep APP_VERSION_NAME= | cut -d &apos;=&apos; -f2)&#10;versionCode=$(cat ${envPath} | grep APP_VERSION_CODE= | cut -d &apos;=&apos; -f2)&#10;&#10;if [ -z &quot;$versionName&quot; ]; then&#10;    versionName=&quot;1.0.0&quot;&#10;fi&#10;&#10;if [ -z &quot;$versionCode&quot; ]; then&#10;    versionCode=&quot;1&quot;&#10;fi&#10;&#10;echo &quot;warning: versionName ${versionName}&quot;&#10;echo &quot;warning: versionCode ${versionCode}&quot;&#10;echo &quot;warning: path ${path}&quot;&#10;&#10;/usr/libexec/PlistBuddy -c &quot;Set :CFBundleShortVersionString $versionName&quot; &quot;$path&quot;&#10;/usr/libexec/PlistBuddy -c &quot;Set :CFBundleVersion $versionCode&quot; &quot;$path&quot;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+                     BuildableName = "ProductsShop.app"
+                     BlueprintName = "ProductsShop"
+                     ReferencedContainer = "container:ProductsShop.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "path=${PROJECT_DIR}/GoogleService-Info.plist&#10;&#10;/usr/libexec/PlistBuddy -c &quot;Set :CLIENT_ID $GOOGLE_FIREBASE_CLIENT_ID&quot; &quot;$path&quot;&#10;/usr/libexec/PlistBuddy -c &quot;Set :REVERSED_CLIENT_ID $GOOGLE_FIREBASE_REVERSED_CLIENT_ID&quot; &quot;$path&quot;&#10;/usr/libexec/PlistBuddy -c &quot;Set :BUNDLE_ID $PRODUCT_BUNDLE_IDENTIFIER&quot; &quot;$path&quot;&#10;/usr/libexec/PlistBuddy -c &quot;Set :GOOGLE_APP_ID $GOOGLE_FIREBASE_GOOGLE_APP_ID&quot; &quot;$path&quot;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+                     BuildableName = "ProductsShop.app"
+                     BlueprintName = "ProductsShop"
+                     ReferencedContainer = "container:ProductsShop.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
+      <PostActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script"
+               scriptText = "versionName=&quot;1.0.0&quot;&#10;versionCode=&quot;1&quot;&#10;path=${INFOPLIST_FILE}&#10;&#10;echo &quot;warning: resetting version&quot;&#10;echo &quot;warning: versionName ${versionName}&quot;&#10;echo &quot;warning: versionCode ${versionCode}&quot;&#10;echo &quot;warning: path ${path}&quot;&#10;&#10;/usr/libexec/PlistBuddy -c &quot;Set :CFBundleShortVersionString $versionName&quot; &quot;$path&quot;&#10;/usr/libexec/PlistBuddy -c &quot;Set :CFBundleVersion $versionCode&quot; &quot;$path&quot;&#10;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+                     BuildableName = "ProductsShop.app"
+                     BlueprintName = "ProductsShop"
+                     ReferencedContainer = "container:ProductsShop.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PostActions>
+      <BuildActionEntries>
+         <BuildActionEntry
+            buildForTesting = "NO"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+               BuildableName = "ProductsShop.app"
+               BlueprintName = "ProductsShop"
+               ReferencedContainer = "container:ProductsShop.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "NO"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1BEE828C124E6416179B904A9F66D794"
+               BuildableName = "React"
+               BlueprintName = "React"
+               ReferencedContainer = "container:Pods/Pods.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+      </BuildActionEntries>
+   </BuildAction>
+   <TestAction
+      buildConfiguration = "Prod-Debug"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES">
+      <Testables>
+      </Testables>
+   </TestAction>
+   <LaunchAction
+      buildConfiguration = "Prod-Release"
+      selectedDebuggerIdentifier = ""
+      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      launchStyle = "0"
+      useCustomWorkingDirectory = "NO"
+      ignoresPersistentStateOnLaunch = "NO"
+      debugDocumentVersioning = "YES"
+      debugServiceExtension = "internal"
+      allowLocationSimulation = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+            BuildableName = "ProductsShop.app"
+            BlueprintName = "ProductsShop"
+            ReferencedContainer = "container:ProductsShop.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </LaunchAction>
+   <ProfileAction
+      buildConfiguration = "Prod-Release"
+      shouldUseLaunchSchemeArgsEnv = "YES"
+      savedToolIdentifier = ""
+      useCustomWorkingDirectory = "NO"
+      debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
+            BuildableName = "ProductsShop.app"
+            BlueprintName = "ProductsShop"
+            ReferencedContainer = "container:ProductsShop.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </ProfileAction>
+   <AnalyzeAction
+      buildConfiguration = "Prod-Debug">
+   </AnalyzeAction>
+   <ArchiveAction
+      buildConfiguration = "Prod-Release"
+      revealArchiveInOrganizer = "YES">
+   </ArchiveAction>
+</Scheme>

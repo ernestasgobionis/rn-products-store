@@ -1,0 +1,87 @@
+app.json# OSX
+
+.DS_Store
+
+# Xcode
+
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+
+# Android/IntelliJ
+
+.idea
+.gradle
+local.properties
+*.iml
+android/build
+
+# Visual Studio Code
+
+.vscode/
+
+# node.js
+
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# expo
+
+.expo/
+
+# BUCK
+
+buck-out/
+\.buckd/
+*.keystore
+!debug.keystore
+!android/keystores/my-release-key.keystore
+
+# fastlane
+
+*/fastlane/report.xml
+*/fastlane/Preview.html
+*/fastlane/screenshots
+*/fastlane/build
+
+# Bundle artifact
+
+*.jsbundle
+*.jsbundle.map
+.eslintcache
+
+# Jest
+
+.jest/
+coverage/
+
+## App packaging
+*.dSYM.zip
+*.dSYM
+
+# react-native-config
+ios/Configuration/tmp.xcconfig
+ios/Pods/*
+!ios/Pods/Manifest.lock
+report.*.json
+artifacts
+.watchman-*
+ios/Info.plist
+
+
+# Whitelabel
+product-output/

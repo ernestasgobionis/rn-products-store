@@ -1,0 +1,120 @@
+fastlane_version "2.151.2"
+opt_out_usage
+
+default_platform(:android)
+
+dev_identifier = ENV["DEV_IDENTIFIER"]
+stage_identifier = ENV["STAGE_IDENTIFIER"]
+prod_identifier = ENV["PROD_IDENTIFIER"]
+
+GOOGLE_SERVICE_ACCOUNT_JSON_DATA = ENV["GOOGLE_SERVICE_ACCOUNT_JSON_DATA"]
+
+platform :android do
+    private_lane :deployFirebase do |options|
+        groups = options[:groups]
+        changelog = options[:changelog]
+
+        if (changelog == nil)
+            changelog = changelog_from_git_commits(
+                pretty: "* %s",
+                date_format: "short",
+                match_lightweight_tag: false,
+                merge_commit_filtering: "exclude_merges",
+                quiet: true
+            )
+        end
+
+        firebase_app_distribution(
+            app: options[:app_id],
+            firebase_cli_token: ENV['FIREBASE_DEPLOY_TOKEN'],
+            release_notes: changelog,
+            groups: groups
+        )
+    end
+
+    private_lane :google do |options|
+        upload_to_play_store(
+            package_name: options[:package_name],
+            track: options[:track],
+            skip_upload_metadata: true,
+            skip_upload_images: true,
+            skip_upload_screenshots: true,
+            json_key_data: GOOGLE_SERVICE_ACCOUNT_JSON_DATA
+        )
+    end
+
+    desc "Deploy a new dev build to firebase app distribution"
+    lane :deployDevFirebase do
+        ENV["IS_NETWORK_DEBUGGABLE"] = "true"
+        gradle(task: "clean assembleDevRelease")
+        deployFirebase(
+            groups: "products-shop-dev",
+            changelog: ENV["changelog"],
+            app_id: ENV['FIREBASE_APP_ID_DEV']
+        )
+    end
+
+    desc "Deploy a new stage build to firebase app distribution"
+    lane :deployStageFirebase do
+        ENV["IS_NETWORK_DEBUGGABLE"] = "true"
+        gradle(task: "clean assembleStageRelease")
+        deployFirebase(
+            groups: "products-shop-stage",
+            changelog: ENV["changelog"],
+            app_id: ENV['FIREBASE_APP_ID_STAGE']
+        )
+    end
+
+    desc "Deploy a new prod build to firebase app distribution"
+    lane :deployProdFirebase do
+        ENV["IS_NETWORK_DEBUGGABLE"] = "true"
+        gradle(task: "clean assembleProdRelease")
+        deployFirebase(
+            groups: "products-shop-live",
+            changelog: ENV["changelog"],
+            app_id: ENV['FIREBASE_APP_ID_PROD']
+        )
+    end
+
+    desc "Deploy a new stage to google play internal"
+    lane :googlePlayInternalStage do
+        gradle(
+            task: "clean bundleStageRelease",
+            system_properties: {
+                "ENVFILE": ".env.stage.release"
+            }
+        )
+        google(
+            package_name: ENV['STAGE_IDENTIFIER'],
+            track: "internal",
+        )
+    end
+
+    desc "Deploy a new prod to google play internal"
+    lane :googlePlayInternalProd do
+        gradle(
+            task: "clean bundleProdRelease",
+            system_properties: {
+                "ENVFILE": ".env.prod.release"
+            }
+        )
+        google(
+            package_name: ENV['PROD_IDENTIFIER'],
+            track: "internal",
+        )
+    end
+
+    desc "Deploy a new prod to google play production"
+    lane :googlePlayProd do
+        gradle(
+            task: "clean bundleProdRelease",
+            system_properties: {
+                "ENVFILE": ".env.prod.release"
+            }
+        )
+        google(
+            package_name: ENV['PROD_IDENTIFIER'],
+            track: "production",
+        )
+    end
+end

@@ -1,0 +1,30 @@
+//
+//  stage.release.xcconfig
+//  Products Shop
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "Pods/Target Support Files/Pods-ProductsShop/Pods-ProductsShop.stage-release.xcconfig"
+
+#include? "tmp.xcconfig"
+
+ENVFILE = .env.stage.release
+
+PRODUCT_BUNDLE_IDENTIFIER = com.ios.products_shop.stage
+
+APP_NAME = Products Shop Stage
+
+DEVELOPMENT_TEAM = Y59HA977T2
+
+CODE_SIGN_STYLE = Manual
+
+CODE_SIGN_IDENTITY = iPhone Distribution
+
+PROVISIONING_PROFILE_SPECIFIER = match AppStore com.ios.products_shop.stage
+
+VERSION_ORIGIN = origin/stage
+
+SENTRY_PROJECT_SLUG = products-shop-app-stage
+
+URL_SCHEME = products-shop

@@ -1,0 +1,30 @@
+//
+//  e2e.release.xcconfig
+//  Products Shop
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "Pods/Target Support Files/Pods-ProductsShop/Pods-ProductsShop.e2e-release.xcconfig"
+
+#include? "tmp.xcconfig"
+
+ENVFILE = .env.e2e.release
+
+PRODUCT_BUNDLE_IDENTIFIER = com.ios.products_shop.develop
+
+APP_NAME = Products Shop E2E
+
+DEVELOPMENT_TEAM = Y59HA977T2
+
+CODE_SIGN_STYLE = Manual
+
+CODE_SIGN_IDENTITY = iPhone Distribution
+
+PROVISIONING_PROFILE_SPECIFIER = match AdHoc com.ios.products_shop.develop
+
+VERSION_ORIGIN = origin/develop
+
+SENTRY_PROJECT_SLUG = products-shop-app-dev
+
+URL_SCHEME = products-shop

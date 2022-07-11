@@ -1,0 +1,30 @@
+//
+//  prod.debug.xcconfig
+//  Products Shop
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "Pods/Target Support Files/Pods-ProductsShop/Pods-ProductsShop.prod-debug.xcconfig"
+
+#include? "tmp.xcconfig"
+
+ENVFILE = .env.prod.debug
+
+PRODUCT_BUNDLE_IDENTIFIER = com.ios.products_shop
+
+APP_NAME = Products Shop (debug)
+
+DEVELOPMENT_TEAM = Y59HA977T2
+
+CODE_SIGN_STYLE = Automatic
+
+CODE_SIGN_IDENTITY = iPhone Developer
+
+PROVISIONING_PROFILE_SPECIFIER =
+
+VERSION_ORIGIN = origin/develop
+
+SENTRY_PROJECT_SLUG = products-shop-app-live
+
+URL_SCHEME = products-shop

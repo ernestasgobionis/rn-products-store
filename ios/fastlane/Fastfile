@@ -1,0 +1,256 @@
+# Customise this file, documentation can be found here:
+# https://github.com/fastlane/fastlane/tree/master/fastlane/docs
+# All available actions: https://docs.fastlane.tools/actions
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "2.151.2"
+
+# xcversion(version: ">=11.5") # Selects Xcode 11.5.0
+
+default_platform :ios
+opt_out_usage
+
+dev_identifiers = [ENV["DEV_IDENTIFIER"]]
+stage_identifiers = [ENV["STAGE_IDENTIFIER"]]
+prod_identifiers = [ENV["PROD_IDENTIFIER"]]
+current_identifier = ENV["PRODUCT_BUNDLE_IDENTIFIER"]
+version_number = ENV["APP_VERSION_NAME"]
+build_number = ENV["APP_VERSION_CODE"]
+sentry_auth_token = ENV["SENTRY_AUTH_TOKEN"]
+app_store_connect_api_key_content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"] # App Store Connect API Key
+app_store_connect_api_issuer_id = ENV["APP_STORE_CONNECT_API_ISSUER_ID"] # App Store Connect API issuer ID
+app_store_connect_api_key_id = ENV["APP_STORE_CONNECT_API_ID"] # App Store Connect API Key ID
+
+def ensure_temp_keychain(name)
+    if File.exist? File.expand_path('~/Library/Keychains/fastlane_tmp_keychain-db')
+        unlock_keychain(
+            path: '~/Library/Keychains/fastlane_tmp_keychain-db',
+            password: ''
+        )
+    end
+    delete_keychain(
+        name: name
+    ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+    create_keychain(
+        name: name,
+        password: 'temppassword',
+        unlock: true,
+        timeout: 0
+    )
+end
+
+platform :ios do
+
+    update_code_signing_settings(use_automatic_signing: false, path: "ProductsShop.xcodeproj")
+
+    # deployment
+    private_lane :deployFirebase do |options|
+        scheme = options[:scheme]
+        groups = options[:groups]
+        exportMethod = options[:export_method]
+        changelog = options[:changelog]
+
+        if (changelog == nil)
+            changelog = changelog_from_git_commits(
+                pretty: "* %s",
+                date_format: "short",
+                match_lightweight_tag: false,
+                merge_commit_filtering: "exclude_merges",
+                quiet: true
+            )
+        end
+
+        gym(
+            scheme: scheme,
+            export_method: exportMethod,
+            output_directory: './fastlane/build',
+            output_name: scheme
+        )
+
+        setup_ci
+
+        sync_code_signing(
+            type: "appstore",
+            readonly: is_ci
+        )
+
+        firebase_app_distribution(
+            app: options[:app_id],
+            release_notes: changelog,
+            groups: groups
+        )
+    end
+
+    private_lane :upload_source_maps_to_sentry do |options|
+        sentry_create_release(
+            auth_token: sentry_auth_token,
+            org_slug: 'products-shop',
+            project_slug: options[:project_slug],
+            app_identifier: options[:identifier],
+            version: "#{version_number}-#{build_number}",
+            finalize: true
+        )
+        sentry_upload_sourcemap(
+            auth_token: sentry_auth_token,
+            org_slug: 'products-shop',
+            project_slug: options[:project_slug],
+            app_identifier: options[:identifier],
+            version: "#{version_number}-#{build_number}",
+            dist: build_number,
+            sourcemap: 'main.jsbundle.map',
+            rewrite: true
+        )
+        sentry_upload_file(
+            auth_token: sentry_auth_token,
+            org_slug: 'products-shop',
+            project_slug: options[:project_slug],
+            app_identifier: options[:identifier],
+            version: "#{version_number}-#{build_number}",
+            dist: build_number,
+            file: 'main.jsbundle'
+        )
+    end
+
+    desc "Deploy a new dev build to firebase app distribution"
+    desc "This will also make sure the profile is up to date"
+    lane :deployDevFirebase do
+        ensure_temp_keychain 'fastlane_temp'
+        match(
+            app_identifier: dev_identifiers,
+            readonly: false,
+            type: "adhoc",
+            force_for_new_devices: true,
+            keychain_name: 'fastlane_temp'
+        )
+        deployFirebase(
+            scheme: "ProductsShop-Dev",
+            groups: ENV["FIREBASE_APP_GROUP_DEV"],
+            export_method: "ad-hoc",
+            changelog: ENV["changelog"],
+            app_id: ENV['FIREBASE_APP_ID_DEV']
+        )
+        upload_source_maps_to_sentry(
+            project_slug: ENV["SENTRY_PROJECT_SLUG"],
+            identifier: dev_identifiers.first
+        )
+    end
+
+    desc "Deploy a new stage build to firebase app distribution"
+    desc "This will also make sure the profile is up to date"
+    lane :deployStageFirebase do
+        ensure_temp_keychain 'fastlane_temp'
+        match(
+            app_identifier: stage_identifiers,
+            readonly: false,
+            type: "adhoc",
+            force_for_new_devices: true,
+            keychain_name: 'fastlane_temp'
+        )
+        deployFirebase(
+            scheme: "ProductsShop-Staging",
+            groups: ENV["FIREBASE_APP_GROUP_STAGE"],
+            export_method: "ad-hoc",
+            changelog: ENV["changelog"],
+            app_id: ENV['FIREBASE_APP_ID_STAGE']
+        )
+        upload_source_maps_to_sentry(
+            project_slug: ENV["SENTRY_PROJECT_SLUG"],
+            identifier: stage_identifiers.first
+        )
+    end
+
+    desc "Deploy a new prod build to firebase app distribution"
+    desc "This will also make sure the profile is up to date"
+    lane :deployProdFirebase do
+        ensure_temp_keychain 'fastlane_temp'
+        match(
+            app_identifier: prod_identifiers,
+            readonly: false,
+            type: "adhoc",
+            force_for_new_devices: true,
+            keychain_name: 'fastlane_temp'
+        )
+        deployFirebase(
+            scheme: "ProductsShop-Production",
+            groups: ENV["FIREBASE_APP_GROUP_PROD"],
+            export_method: "ad-hoc",
+            changelog: ENV["changelog"],
+            app_id: ENV['FIREBASE_APP_ID_PROD']
+        )
+    end
+
+    desc "Deploy a new stage build to apple testFlight"
+    lane :testFlightStage do
+        app_store_connect_api_key(
+            key_id: app_store_connect_api_key_id,
+            issuer_id: app_store_connect_api_issuer_id,
+            key_content: app_store_connect_api_key_content,
+            in_house: false
+        )
+        ensure_temp_keychain 'fastlane_temp'
+        match(
+            app_identifier: stage_identifiers,
+            readonly: false,
+            type: "appstore",
+            keychain_name: 'fastlane_temp'
+        )
+        gym(scheme: "ProductsShop-Staging")
+        upload_to_testflight(app_identifier: current_identifier, skip_waiting_for_build_processing: true)
+    end
+
+    desc "Deploy a new prod build to apple testFlight"
+    lane :testFlightProd do
+        app_store_connect_api_key(
+            key_id: app_store_connect_api_key_id,
+            issuer_id: app_store_connect_api_issuer_id,
+            key_content: app_store_connect_api_key_content,
+            in_house: false
+        )
+        ensure_temp_keychain 'fastlane_temp'
+        match(
+            app_identifier: prod_identifiers,
+            readonly: false,
+            type: "appstore",
+            keychain_name: 'fastlane_temp'
+        )
+        gym(scheme: "ProductsShop-Production")
+        upload_to_testflight(app_identifier: current_identifier, skip_waiting_for_build_processing: true)
+        upload_source_maps_to_sentry(
+            project_slug: ENV["SENTRY_PROJECT_SLUG"],
+            identifier: prod_identifiers.first
+        )
+    end
+
+    desc "Deploy a new prod build to apple appstore"
+    lane :appStoreProd do
+        app_store_connect_api_key(
+            key_id: app_store_connect_api_key_id,
+            issuer_id: app_store_connect_api_issuer_id,
+            key_content: app_store_connect_api_key_content,
+            in_house: false
+        )
+        ensure_temp_keychain 'fastlane_temp'
+        match(
+            app_identifier: prod_identifiers,
+            readonly: false,
+            type: "appstore",
+            keychain_name: 'fastlane_temp'
+        )
+        gym(scheme: "ProductsShop-Production")
+        upload_to_app_store(
+            skip_screenshots: true,
+            submit_for_review: true,
+            automatic_release: true,
+            run_precheck_before_submit: true
+        )
+    end
+
+end

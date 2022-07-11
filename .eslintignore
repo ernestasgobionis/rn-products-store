@@ -1,0 +1,6 @@
+node_modules/
+*.d.ts
+ios/
+assets/
+android/
+e2e/
